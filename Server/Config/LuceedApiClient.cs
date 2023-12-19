@@ -22,4 +22,8 @@ public class LuceedApiClient
     }
 
     public async Task<HttpResponseMessage> GetArticlesByNameAsync(string name) => await _httpClient.GetAsync($"artikli/naziv/{name}/[0,5]"); // paging shouldn't fixed, but it's an only example
+
+    public async Task<HttpResponseMessage> GetPaymentCalculationByPaymentType(string type, string fromDate) => await _httpClient.GetAsync($"mpobracun/placanja/{type}/{fromDate}");
+
+    public async Task<HttpResponseMessage> GetPaymentCalculationByProducts(string type, string fromDate) => await _httpClient.GetAsync($"mpobracun/artikli/{type}/{fromDate}");
 }

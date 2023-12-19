@@ -1,0 +1,98 @@
+﻿@page "/luceed/payment-calculation"
+@using LuceedDemo.Shared;
+@inject HttpClient Http
+
+<PageTitle>Luceed - PAYMENT CALCULATION</PageTitle>
+
+<h1>Luceed - PAYMENT CALCULATION</h1>
+
+<div>
+    <input @bind="PaymentType" placeholder="4986-1" />
+    <input type="date" @bind="FromDate" />
+    <button @onclick="CalculatePaymentByPaymentType">Calculate payment by payment type</button>
+    <button @onclick="CalculatePaymentByProducts">Calculate payment by products</button>
+</div>
+
+@if (ResultByPaymentType is null && ResultByProducts is null)
+{
+    <p><em>No data</em></p>
+}
+else if (ResultByPaymentType is not null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Payment type UID</th>
+                <th>Payment type name</th>
+                <th>Payment amount</th>
+                <th>Over-group of payment type UID</th>
+                <th>Name of over-group of payment type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var result in ResultByPaymentType)
+            {
+                <tr>
+                    <td>@result.vrste_placanja_uid</td>
+                    <td>@result.naziv</td>
+                    <td>@result.iznos</td>
+                    <td>@result.nadgrupa_placanja_uid</td>
+                    <td>@result.nadgrupa_placanja_naziv</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (ResultByProducts is not null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product UID</th>
+                <th>Product name</th>
+                <th>Sold quantity</th>
+                <th>Sold amount</th>
+                <th>Is the product a service (yes/no)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var result in ResultByProducts)
+            {
+                <tr>
+                    <td>@result.artikl_uid</td>
+                    <td>@result.naziv_artikla</td>
+                    <td>@result.kolicina</td>
+                    <td>@result.iznos</td>
+                    <td>@result.usluga</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string? PaymentType { get; set; }
+    private DateTime? FromDate { get; set; } 
+
+    private CalculationByPaymentType[]? ResultByPaymentType;
+    private CalculationByProducts[]? ResultByProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ResultByPaymentType = null;
+        ResultByProducts = null;
+        FromDate = new DateTime(2013, 1, 1);
+    }
+
+    private async Task CalculatePaymentByPaymentType()
+    {
+        ResultByProducts = null;
+        ResultByPaymentType = await Http.GetFromJsonAsync<CalculationByPaymentType[]>($"Luceed/calculation/payment/{PaymentType}/{FromDate.Value.ToString("dd.MM.yyyy")}");
+    }
+
+    private async Task CalculatePaymentByProducts()
+    {
+        ResultByPaymentType = null;
+        ResultByProducts = await Http.GetFromJsonAsync<CalculationByProducts[]>($"Luceed/calculation/products/{PaymentType}/{FromDate.Value.ToString("dd.MM.yyyy")}");
+    }
+}

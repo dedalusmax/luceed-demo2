@@ -16,7 +16,7 @@ public class LuceedController : ControllerBase
     }
 
     [HttpGet("articles/{name}")]
-    public async Task<IActionResult> Get(string name)
+    public async Task<IActionResult> GetArticlesByName(string name)
     {
         var response = await _client.GetArticlesByNameAsync(name);
 
@@ -24,6 +24,26 @@ public class LuceedController : ControllerBase
 
         var result = await response.Content.ReadFromJsonAsync<ArticlesResult>();
 
-        return Ok(result.result[0].artikli);
+        return Ok(result?.result[0].artikli);
+    }
+
+    [HttpGet("calculation/payment/{type}/{fromdate}")]
+    public async Task<IActionResult> GetPaymentCalculationByPaymentType(string type, string fromDate)
+    {
+        var response = await _client.GetPaymentCalculationByPaymentType(type, fromDate);
+
+        var result = await response.Content.ReadFromJsonAsync<CalculationByPaymentTypeResult>();
+
+        return Ok(result?.result[0].obracun_placanja);
+    }
+
+    [HttpGet("calculation/products/{type}/{fromdate}")]
+    public async Task<IActionResult> GetPaymentCalculationByProducts(string type, string fromDate)
+    {
+        var response = await _client.GetPaymentCalculationByProducts(type, fromDate);
+
+        var result = await response.Content.ReadFromJsonAsync<CalculationByProductsResult>();
+
+        return Ok(result?.result[0].obracun_artikli);
     }
 }

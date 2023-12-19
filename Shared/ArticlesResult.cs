@@ -12,7 +12,7 @@ public record ResultList
     public List<Article> artikli { get; set; }
 }
 
-public record ArticlesResult
+public sealed record ArticlesResult
 {
     public List<ResultList> result { get; set; }
 }
