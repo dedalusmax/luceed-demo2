@@ -1,0 +1,50 @@
+﻿@page "/luceed"
+@using LuceedDemo.Shared;
+@inject HttpClient Http
+
+<h3>Luceed</h3>
+
+<div>
+    <input @bind="ArticleSearch" />
+    <button @onclick="FetchArticlesByName">Fetch Articles</button>
+</div>
+
+@if (Articles == null)
+{
+    <p><em>No data</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var article in Articles)
+            {
+                <tr>
+                    <td>@article.id</td>
+                    <td>@article.naziv</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string? ArticleSearch { get; set; }
+    private Article[]? Articles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Articles = null;
+    }
+
+    private async Task FetchArticlesByName()
+    {
+       Articles = await Http.GetFromJsonAsync<Article[]>($"Luceed/articles/{ArticleSearch}");
+    }
+}
